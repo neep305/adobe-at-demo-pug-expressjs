@@ -11,6 +11,17 @@ html(lang='en')
     //- jQuery CDN
     script(src='https://code.jquery.com/jquery-3.7.1.min.js')
 
+    // targetGlobalSettings for Adobe Target
+    script.
+      window.targetGlobalSettings = {
+        clientCode: '!{targetClientCode}',
+        decisioningMethod: '!{targetDecisioningMethod}',
+        organizationId: '!{organizationId}',
+        propertyToken: '!{propertyToken}',
+        serverDomain: '!{serverDomain}'
+      };
+      console.log('Target Global Settings:', window.targetGlobalSettings);
+
     // prehiding for Adobe Target
     script.
       (function (win, doc, style, timeout) {
