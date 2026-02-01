@@ -20,10 +20,12 @@ html(lang='en')
         serverDomain: '!{serverDomain}',
         timeout: 3000,
         pageLoadEnabled: !{targetRenderMode === 'client-vec' ? 'true' : 'false'},
-        bodyHidingEnabled: !{targetRenderMode !== 'server' ? 'true' : 'false'}
+        bodyHidingEnabled: !{targetRenderMode !== 'server' ? 'true' : 'false'},
+        authoringScriptUrl: 'https://cdn.tt.omtrdc.net/cdn/target-vec.js'
       };
-      console.log('Target Render Mode:', '!{targetRenderMode}');
-      console.log('Target Global Settings:', window.targetGlobalSettings);
+      console.log('🎯 Target Render Mode:', '!{targetRenderMode}');
+      console.log('🔧 Target Global Settings:', window.targetGlobalSettings);
+      console.log('📍 Current URL:', window.location.href);
 
     // prehiding for Adobe Target
     script.
@@ -57,7 +59,18 @@ html(lang='en')
     
     //- Adobe Target at.js (if configured)
     if atjsPath
-      script(src=atjsPath)
+      script(src=atjsPath, onload="console.log('✅ at.js loaded successfully');", onerror="console.error('❌ Failed to load at.js');")
+    
+    //- QA Mode detection
+    script.
+      var urlParams = new URLSearchParams(window.location.search);
+      var qaToken = urlParams.get('at_preview_token');
+      if (qaToken) {
+        console.log('🔍 QA Mode Detected!');
+        console.log('   Preview Token:', qaToken);
+        console.log('   Preview Index:', urlParams.get('at_preview_index'));
+        console.log('   Listed Activities Only:', urlParams.get('at_preview_listed_activities_only'));
+      }
     
   body.bg-gray-50.min-h-screen.flex.flex-col
     //- Header
