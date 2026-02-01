@@ -113,7 +113,7 @@ block append-script
               offer: offer,
               selector: '#homepage-hero-container'
             });
-            console.log('✅ Target homepage-hero offer applied');
+            console.log('✅ Target homepage-hero offer applied. { \'offer\' : ' + JSON.stringify(offer) + ' }');
           },
           error: function(status, error) {
             console.error('❌ Target homepage-hero error:', status, error);
