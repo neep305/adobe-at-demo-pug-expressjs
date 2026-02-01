@@ -14,12 +14,19 @@ const PORT = process.env.PORT || 3000;
 // Initialize Adobe Target
 initializeTargetClient();
 
+const targetConfig = require('./config/target');
+
 // View engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 // Make environment variables available to templates
 app.locals.atjsPath = process.env.TARGET_ATJS_PATH || null;
+app.locals.targetRenderMode = targetConfig.renderMode;
+app.locals.targetClientCode = targetConfig.client || '';
+app.locals.organizationId = targetConfig.organizationId || '';
+app.locals.propertyToken = targetConfig.propertyToken || '';
+app.locals.serverDomain = targetConfig.serverDomain || '';
 app.locals.targetClientCode = process.env.TARGET_CLIENT_CODE || null;
 app.locals.targetDecisioningMethod = process.env.TARGET_DECISIONING_METHOD || 'server-side';
 app.locals.organizationId = process.env.TARGET_ORGANIZATION_ID || null;
@@ -77,6 +84,7 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`\n🚀 E-Commerce Demo Server running on http://localhost:${PORT}`);
   console.log(`📦 Adobe Target Integration: ${process.env.TARGET_CLIENT_CODE ? 'Configured' : 'Not Configured (update .env)'}`);
+  console.log(`🎯 Target Render Mode: ${targetConfig.renderMode}`);
   console.log(`\n👤 Test Accounts:`);
   console.log(`   Username: demo | Password: password123`);
   console.log(`   Username: john.doe | Password: demo123`);

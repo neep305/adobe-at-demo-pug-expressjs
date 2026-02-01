@@ -15,11 +15,14 @@ html(lang='en')
     script.
       window.targetGlobalSettings = {
         clientCode: '!{targetClientCode}',
-        decisioningMethod: '!{targetDecisioningMethod}',
         organizationId: '!{organizationId}',
         propertyToken: '!{propertyToken}',
-        serverDomain: '!{serverDomain}'
+        serverDomain: '!{serverDomain}',
+        timeout: 3000,
+        pageLoadEnabled: !{targetRenderMode === 'client-vec' ? 'true' : 'false'},
+        bodyHidingEnabled: !{targetRenderMode !== 'server' ? 'true' : 'false'}
       };
+      console.log('Target Render Mode:', '!{targetRenderMode}');
       console.log('Target Global Settings:', window.targetGlobalSettings);
 
     // prehiding for Adobe Target

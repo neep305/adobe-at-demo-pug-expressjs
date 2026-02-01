@@ -14,8 +14,7 @@ const config = {
   decisioning: {
     method: process.env.TARGET_DECISIONING_METHOD || 'server-side',
     pollingInterval: 300000 // 5 minutes
-  },
-  logger: {
+  },  renderMode: process.env.TARGET_RENDER_MODE || 'server',  logger: {
     enabled: process.env.NODE_ENV === 'development',
     level: 'debug'
   }
