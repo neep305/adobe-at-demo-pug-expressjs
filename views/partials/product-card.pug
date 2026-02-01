@@ -1,0 +1,64 @@
+div(class='bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow relative')
+  if product.salePrice
+    div(class='absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-sm font-bold')
+      | SALE
+  
+  a(href=`/products/${product.id}`)
+    div(class='aspect-w-16 aspect-h-9 bg-gray-200')
+      div(class='flex items-center justify-center h-48')
+        span(class='text-4xl') 📦
+    
+    div(class='p-4')
+      div(class='font-semibold text-lg mb-2 text-gray-800 hover:text-blue-600')= product.name
+      p(class='text-gray-600 text-sm mb-3 line-clamp-2')= product.description
+      
+      div(class='flex items-center justify-between')
+        div(class='flex items-baseline space-x-2')
+          if product.salePrice
+            span(class='text-xl font-bold text-red-600')= `$${product.salePrice.toFixed(2)}`
+            span(class='text-sm text-gray-500 line-through')= `$${product.price.toFixed(2)}`
+          else
+            span(class='text-xl font-bold text-gray-800')= `$${product.price.toFixed(2)}`
+        
+        button(
+          class='add-to-cart-btn bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm'
+          data-product-id=product.id
+          type='button'
+        )
+          | Add to Cart
+
+script.
+  $(document).ready(function() {
+    $('.add-to-cart-btn').on('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const productId = $(this).data('product-id');
+      const button = $(this);
+      
+      $.ajax({
+        url: '/cart/add',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ productId: productId, quantity: 1 }),
+        success: function(response) {
+          button.text('Added!').removeClass('bg-blue-600').addClass('bg-green-600');
+          
+          // Update cart count in header if exists
+          if (response.cartItemCount) {
+            const cartBadge = $('.cart-count-badge');
+            if (cartBadge.length) {
+              cartBadge.text(response.cartItemCount);
+            }
+          }
+          
+          setTimeout(function() {
+            button.text('Add to Cart').removeClass('bg-green-600').addClass('bg-blue-600');
+          }, 2000);
+        },
+        error: function() {
+          alert('Failed to add item to cart. Please try again.');
+        }
+      });
+    });
+  });

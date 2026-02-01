@@ -1,0 +1,27 @@
+﻿doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    title= title || 'TechStore'
+    
+    //- Tailwind CSS CDN
+    script(src='https://cdn.tailwindcss.com')
+    
+    //- jQuery CDN
+    script(src='https://code.jquery.com/jquery-3.7.1.min.js')
+    
+    //- Adobe Target at.js (if configured)
+    if atjsPath
+      script(src=atjsPath)
+    
+  body.bg-gray-50.min-h-screen.flex.flex-col
+    //- Header
+    include partials/header
+    
+    //- Main Content
+    main.flex-grow
+      block content
+    
+    //- Footer
+    include partials/footer

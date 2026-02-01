@@ -1,0 +1,58 @@
+extends layout
+
+block content
+  //- Hero Section (Adobe Target: homepage-hero mbox)
+  if heroContent
+    section(class='bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20')
+      div(class='container mx-auto px-4 text-center')
+        != heroContent
+  else
+    section(class='bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20')
+      div(class='container mx-auto px-4 text-center')
+        h1(class='text-5xl font-bold mb-4') Welcome to TechStore
+        p(class='text-xl mb-8') Discover Premium Electronics & Latest Gadgets
+        a(href='/products/search' class='bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 inline-block')
+          | Shop Now
+  
+  //- Featured Products
+  section(class='container mx-auto px-4 py-12')
+    h2(class='text-3xl font-bold mb-8 text-center') Featured Products
+    
+    if recommendationsContent
+      div(class='mb-6')
+        != recommendationsContent
+
+    div(class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6')
+      each product in featuredProducts
+        include partials/product-card
+  
+  //- Sale Section
+  if saleProducts && saleProducts.length > 0
+    section(class='container mx-auto px-4 py-12')
+      div(class='bg-red-50 rounded-lg p-8')
+        h2(class='text-3xl font-bold mb-8 text-center text-red-600') 🔥 Limited Time Sale
+        
+        div(class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6')
+          each product in saleProducts
+            include partials/product-card
+  
+  //- Categories Section
+  section(class='container mx-auto px-4 py-12')
+    h2(class='text-3xl font-bold mb-8 text-center') Shop by Category
+    
+    div(class='grid grid-cols-2 md:grid-cols-4 gap-6')
+      a(href='/products/search?q=laptop' class='bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow')
+        div(class='text-4xl mb-2') 💻
+        h3(class='font-semibold') Laptops
+      
+      a(href='/products/search?q=phone' class='bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow')
+        div(class='text-4xl mb-2') 📱
+        h3(class='font-semibold') Phones
+      
+      a(href='/products/search?q=audio' class='bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow')
+        div(class='text-4xl mb-2') 🎧
+        h3(class='font-semibold') Audio
+      
+      a(href='/products/search?q=wearables' class='bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow')
+        div(class='text-4xl mb-2') ⌚
+        h3(class='font-semibold') Wearables

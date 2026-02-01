@@ -1,0 +1,64 @@
+header(class='bg-white shadow-md')
+  nav(class='container mx-auto px-4 py-4')
+    div(class='flex items-center justify-between')
+      //- Logo
+      a(href='/' class='text-2xl font-bold text-blue-600') TechStore
+      
+      //- Desktop Navigation
+      div(class='hidden md:flex items-center space-x-6')
+        a(href='/' class='text-gray-700 hover:text-blue-600') Home
+        a(href='/products/search' class='text-gray-700 hover:text-blue-600') Browse
+        
+        //- Search Form
+        form(action='/products/search' method='GET' class='flex items-center')
+          input(
+            type='text'
+            name='q'
+            placeholder='Search products...'
+            class='border border-gray-300 rounded-l px-4 py-2 w-64'
+          )
+          button(type='submit' class='bg-blue-600 text-white px-4 py-2 rounded-r hover:bg-blue-700')
+            | Search
+        
+        //- Cart
+        a(href='/cart' class='relative text-gray-700 hover:text-blue-600')
+          span 🛒 Cart
+          if cartItemCount > 0
+            span(class='absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs')= cartItemCount
+        
+        //- User Menu
+        if isAuthenticated
+          div(class='relative group')
+            button(class='text-gray-700 hover:text-blue-600 flex items-center')
+              span 👤 #{username}
+              svg(class='w-4 h-4 ml-1' fill='currentColor' viewBox='0 0 20 20')
+                path(fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd')
+            div(class='absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg hidden group-hover:block z-10')
+              a(href='/auth/logout' class='block px-4 py-2 text-gray-700 hover:bg-gray-100') Logout
+        else
+          a(href='/auth/login' class='text-gray-700 hover:text-blue-600') Login
+          a(href='/auth/register' class='bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700') Sign Up
+      
+      //- Mobile Menu Button
+      button#mobile-menu-button(class='md:hidden text-gray-700')
+        svg(class='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24')
+          path(stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 6h16M4 12h16M4 18h16')
+  
+  //- Mobile Menu
+  div#mobile-menu(class='hidden md:hidden bg-white border-t')
+    div(class='container mx-auto px-4 py-4 space-y-3')
+      a(href='/' class='block text-gray-700 hover:text-blue-600') Home
+      a(href='/products/search' class='block text-gray-700 hover:text-blue-600') Browse
+      a(href='/cart' class='block text-gray-700 hover:text-blue-600') Cart
+      if isAuthenticated
+        span(class='block text-gray-600') 👤 #{username}
+        a(href='/auth/logout' class='block text-gray-700 hover:text-blue-600') Logout
+      else
+        a(href='/auth/login' class='block text-gray-700 hover:text-blue-600') Login
+        a(href='/auth/register' class='block text-gray-700 hover:text-blue-600') Sign Up
+
+script.
+  document.getElementById('mobile-menu-button')?.addEventListener('click', function() {
+    const menu = document.getElementById('mobile-menu');
+    menu.classList.toggle('hidden');
+  });

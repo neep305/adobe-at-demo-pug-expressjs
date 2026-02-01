@@ -1,0 +1,14 @@
+﻿extends layout
+
+block content
+  .container.mx-auto.px-4.py-8.text-center
+    .text-6xl.mb-4= error.status === 404 ? '🔍' : '⚠️'
+    h1.text-3xl.font-bold.mb-2= title || 'Error'
+    p.text-gray-600.mb-6= message || 'An error occurred'
+    
+    if error.stack && process.env.NODE_ENV === 'development'
+      .bg-gray-100.rounded-lg.p-4.text-left.max-w-2xl.mx-auto.mb-6
+        pre.text-xs.overflow-auto= error.stack
+    
+    a(href='/' class='bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-semibold inline-block')
+      | Go to Homepage
