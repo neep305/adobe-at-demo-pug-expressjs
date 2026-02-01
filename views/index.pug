@@ -77,8 +77,31 @@ block content
         h3(class='font-semibold') Wearables
 
 block append-script
+  //- Client-side VEC: Manual global mbox trigger
+  if targetRenderMode === 'client-vec'
+    script.
+      // Wait for at.js to load and manually trigger global mbox
+      if (typeof adobe !== 'undefined' && adobe.target) {
+        console.log('🎯 Manually triggering global mbox for VEC...');
+        adobe.target.getOffer({
+          mbox: 'target-global-mbox',
+          success: function(offer) {
+            adobe.target.applyOffer({ 
+              mbox: 'target-global-mbox', 
+              offer: offer 
+            });
+            console.log(`✅ Global mbox manually triggered and applied. { 'offer' : ${JSON.stringify(offer)} }`);
+          },
+          error: function(status, error) {
+            console.error('❌ Global mbox error:', status, error);
+          }
+        });
+      } else {
+        console.warn('⚠️ Adobe Target (at.js) not loaded - cannot trigger global mbox');
+      }
+  
   //- Client-side Form-Based mbox implementation
-  if targetRenderMode === 'client-form'
+  else if targetRenderMode === 'client-form'
     script.
       // Wait for at.js to load
       if (typeof adobe !== 'undefined' && adobe.target) {
