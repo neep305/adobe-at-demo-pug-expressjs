@@ -10,6 +10,36 @@ html(lang='en')
     
     //- jQuery CDN
     script(src='https://code.jquery.com/jquery-3.7.1.min.js')
+
+    // prehiding for Adobe Target
+    script.
+      (function (win, doc, style, timeout) {
+        var STYLE_ID = 'at-body-style';
+
+        function getParent() {
+          return doc.getElementsByTagName('head')[0];
+        }
+        function addStyle(parent, id, def) {
+          if (!parent) return;
+          var el = doc.createElement('style');
+          el.id = id;
+          el.innerHTML = def;
+          parent.appendChild(el);
+        }
+        function removeStyle(parent, id) {
+          if (!parent) return;
+          var el = doc.getElementById(id);
+          if (!el) return;
+          parent.removeChild(el);
+        }
+
+        addStyle(getParent(), STYLE_ID, style);
+        setTimeout(function () {
+          removeStyle(getParent(), STYLE_ID);
+        }, timeout);
+
+      })(window, document, 'body {opacity: 0 !important}', 3000);
+
     
     //- Adobe Target at.js (if configured)
     if atjsPath
@@ -25,3 +55,5 @@ html(lang='en')
     
     //- Footer
     include partials/footer
+
+    block append-script

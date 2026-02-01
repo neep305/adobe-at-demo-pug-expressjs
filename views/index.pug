@@ -56,3 +56,9 @@ block content
       a(href='/products/search?q=wearables' class='bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow')
         div(class='text-4xl mb-2') ⌚
         h3(class='font-semibold') Wearables
+block append-script
+  //- Additional scripts can be added here
+  script.
+    $(() => {
+      console.log('Homepage loaded');
+    });

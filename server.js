@@ -20,6 +20,11 @@ app.set('view engine', 'pug');
 
 // Make environment variables available to templates
 app.locals.atjsPath = process.env.TARGET_ATJS_PATH || null;
+app.locals.targetClientCode = process.env.TARGET_CLIENT_CODE || null;
+app.locals.targetDecisioningMethod = process.env.TARGET_DECISIONING_METHOD || 'server-side';
+app.locals.organizationId = process.env.TARGET_ORGANIZATION_ID || null;
+app.locals.propertyToken = process.env.TARGET_PROPERTY_TOKEN || null;
+app.locals.serverDomain = process.env.TARGET_SERVER_DOMAIN || null;
 
 // Middleware
 app.use(express.json());

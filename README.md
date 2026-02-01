@@ -65,6 +65,22 @@ A full-featured e-commerce demo application built with **Express.js**, **Pug**, 
    TARGET_DECISIONING_METHOD=server-side
    ```
 
+### Finding Your Adobe Target Credentials
+
+To obtain the credentials needed for your `.env` file:
+
+1. **Log in to Adobe Experience Cloud** and navigate to Adobe Target
+2. **Access the Implementation settings:**
+   - Click **Administration** in the top navigation
+   - Select **Implementation** from the left sidebar
+   - You'll see your **Client Code** displayed prominently at the top
+3. **Locate additional credentials in the same view:**
+   - **Organization ID**: Found in the same Implementation page (format: `xxxxx@AdobeOrg`)
+   - **Server Domain**: Typically `[your-client-code].tt.omtrdc.net`
+   - **Property Token** (optional): Available if you're using Properties for workspace management
+
+> **💡 Tip**: Consider taking a screenshot of this page for easy reference when configuring multiple environments.
+
 ## 🚀 Running the Application
 
 ### Development Mode (with auto-reload)
@@ -236,6 +252,170 @@ Examples:
 - `pdp-add-to-cart` - Add to cart button on product detail page
 - `cart-abandonment-offer` - Promotional message in cart
 
+## 🎯 Client-Side at.js Implementation
+
+While this demo primarily uses **server-side Adobe Target SDK** for personalization, understanding client-side at.js is crucial for comprehensive Target implementations.
+
+### Downloading at.js
+
+1. Log in to **Adobe Target UI**
+2. Navigate to **Administration** → **Implementation**
+3. Download the appropriate at.js version:
+   - **at.js 2.x** (recommended) - Supports SPA and traditional sites
+   - **at.js 1.x** (legacy) - Traditional page-load only
+
+### Basic HTML Setup
+
+Add at.js to your page with `targetGlobalSettings` before the library loads:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <script>
+    window.targetGlobalSettings = {
+      clientCode: "your-client-code",
+      serverDomain: "your-client-code.tt.omtrdc.net",
+      imsOrgId: "your-org-id@AdobeOrg",
+      cookieDomain: "yoursite.com",
+      timeout: 3000,
+      allowHighEntropyClientHints: true,
+      defaultContentHiddenStyle: "visibility: hidden;",
+      defaultContentVisibleStyle: "visibility: visible;",
+      bodyHidingEnabled: true,
+      bodyHiddenStyle: "body { opacity: 0 }",
+      globalMboxName: "target-global-mbox"
+    };
+  </script>
+  <script src="/path/to/at.js"></script>
+</head>
+<body>
+  <!-- Your content here -->
+</body>
+</html>
+```
+
+### Mbox Implementation Examples
+
+#### Global Mbox (Automatic)
+at.js 2.x automatically fires a global page-load mbox on every page:
+
+```javascript
+// Fires automatically on page load
+// Tracked in Target as "target-global-mbox" (or custom name from settings)
+```
+
+#### Custom Regional Mbox (Synchronous)
+Use for inline content personalization:
+
+```html
+<div class="hero-banner">
+  <div class="mboxDefault">
+    <h1>Welcome to Our Store</h1>
+  </div>
+  <div data-mbox="homepage-hero"></div>
+</div>
+
+<script>
+  adobe.target.getOffer({
+    mbox: "homepage-hero",
+    success: function(offer) {
+      adobe.target.applyOffer({ mbox: "homepage-hero", offer: offer });
+    },
+    error: function(status, error) {
+      console.error("Target error:", status, error);
+    }
+  });
+</script>
+```
+
+#### Custom Mbox with Parameters (Async)
+Pass contextual data to Target:
+
+```javascript
+adobe.target.getOffer({
+  mbox: "pdp-recommendations",
+  params: {
+    "entity.id": "PROD-123",
+    "entity.categoryId": "electronics",
+    "entity.value": 599.99,
+    "profile.favoriteCategory": "laptops"
+  },
+  success: function(offer) {
+    adobe.target.applyOffer({ mbox: "pdp-recommendations", offer: offer });
+  },
+  error: function(status, error) {
+    console.error("Target error:", status, error);
+  }
+});
+```
+
+#### Conversion Tracking
+Track key business events:
+
+```javascript
+// Order confirmation tracking
+adobe.target.trackEvent({
+  mbox: "order-confirmation",
+  params: {
+    "orderId": "12345",
+    "orderTotal": "1299.98",
+    "productPurchasedId": "PROD-123,PROD-456"
+  }
+});
+
+// Custom conversion event
+adobe.target.trackEvent({
+  mbox: "newsletter-signup",
+  params: { "email": "user@example.com" }
+});
+```
+
+### Comparison: Server-Side SDK vs Client-Side at.js
+
+| Feature | Server-Side SDK (This Demo) | Client-Side at.js |
+|---------|----------------------------|-------------------|
+| **Implementation** | Node.js backend integration | JavaScript in browser |
+| **Execution** | Renders content server-side | Modifies DOM client-side |
+| **Performance** | Faster initial page load | Potential flicker/latency |
+| **SEO** | Fully crawlable content | May require pre-rendering |
+| **Visitor Identity** | Requires manual session management | Automatic cookie handling |
+| **Use Cases** | SSR apps, API-driven content | SPAs, dynamic UI changes |
+| **Analytics Integration** | Manual tracking setup | Native A4T support |
+| **Real-Time Data** | Requires backend refresh | Immediate updates possible |
+| **Bot Traffic** | Excluded automatically | May inflate metrics |
+| **Flicker Control** | No flicker (pre-rendered) | Requires hiding/showing logic |
+
+### Implementation in This Demo
+
+This application uses **server-side Adobe Target SDK** via [targetClient.js](config/targetClient.js) and [targetHelpers.js](utils/targetHelpers.js), but **at.js is loaded in the layout** for:
+
+1. **Visitor ID Synchronization** - Maintains consistent identity across channels
+2. **Analytics Integration** - Enables A4T (Analytics for Target) reporting
+3. **Client-Side Event Tracking** - Captures granular user interactions
+4. **Future Enhancements** - Allows hybrid implementation patterns
+
+You can find at.js loaded in [views/layout.pug](views/layout.pug) within the `<head>` section.
+
+### When to Use Each Approach
+
+**Choose Server-Side SDK when:**
+- Building SSR apps (Next.js, Nuxt, Express+Pug)
+- SEO is critical
+- Need guaranteed content delivery without flicker
+- API-first architecture
+
+**Choose Client-Side at.js when:**
+- Building SPAs (React, Vue, Angular)
+- Need real-time personalization updates
+- Require native Analytics for Target (A4T) integration
+- Testing UI interactions and dynamic elements
+
+**Use Hybrid (Both) when:**
+- Want SSR performance + SPA interactivity
+- Need initial page personalization + post-load adjustments
+- Implementing progressive enhancement strategy
+
 ## 📊 Analytics & Tracking
 
 ### Conversion Tracking
@@ -285,8 +465,10 @@ The app tracks the following conversion events:
 
 ## 📚 Resources
 
-- [Adobe Target Documentation](https://experienceleague.adobe.com/docs/target/using/target-home.html)
 - [Adobe Target Node.js SDK](https://github.com/adobe/target-nodejs-sdk)
+- [Adobe Target Node.js SDK Documentation](https://adobetarget-sdks.gitbook.io/docs/sdk-reference-guides/nodejs-sdk)
+- [Adobe Target Delivery API](https://developers.adobetarget.com/api/delivery-api/)
+- [Target Open API Spec](https://github.com/adobe/target-openapi)
 - [Express.js Documentation](https://expressjs.com/)
 - [Pug Template Engine](https://pugjs.org/)
 - [Tailwind CSS](https://tailwindcss.com/)
