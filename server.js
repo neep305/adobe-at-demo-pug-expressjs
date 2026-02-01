@@ -26,6 +26,14 @@ app.locals.organizationId = process.env.TARGET_ORGANIZATION_ID || null;
 app.locals.propertyToken = process.env.TARGET_PROPERTY_TOKEN || null;
 app.locals.serverDomain = process.env.TARGET_SERVER_DOMAIN || null;
 
+console.log('🌐 App Locals Configuration:');
+console.log('   atjsPath:', app.locals.atjsPath);
+console.log('   targetClientCode:', app.locals.targetClientCode ? '✓ Set' : '✗ Missing');
+console.log('   targetDecisioningMethod:', app.locals.targetDecisioningMethod);
+console.log('   organizationId:', app.locals.organizationId ? '✓ Set' : '✗ Missing');
+console.log('   propertyToken:', app.locals.propertyToken ? '✓ Set' : '✗ Missing');
+console.log('   serverDomain:', app.locals.serverDomain ? '✓ Set' : '✗ Missing');
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
