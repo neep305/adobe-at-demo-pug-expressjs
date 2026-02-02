@@ -21,11 +21,17 @@ html(lang='en')
         timeout: 3000,
         pageLoadEnabled: !{targetRenderMode === 'client-vec' ? 'true' : 'false'},
         bodyHidingEnabled: !{targetRenderMode !== 'server' ? 'true' : 'false'},
-        authoringScriptUrl: 'https://cdn.tt.omtrdc.net/cdn/target-vec.js'
+        authoringScriptUrl: 'https://cdn.tt.omtrdc.net/cdn/target-vec.js',
+        enabled: true
       };
+      
+      // Enable Target debug mode via localStorage
+      localStorage.setItem('at_debug', 'true');
+      
       console.log('🎯 Target Render Mode:', '!{targetRenderMode}');
       console.log('🔧 Target Global Settings:', window.targetGlobalSettings);
       console.log('📍 Current URL:', window.location.href);
+      console.log('🐛 Target Debug Mode: ENABLED (via localStorage)');
 
     // prehiding for Adobe Target
     script.

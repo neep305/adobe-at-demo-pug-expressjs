@@ -103,24 +103,68 @@ block append-script
   //- Client-side Form-Based mbox implementation
   else if targetRenderMode === 'client-form'
     script.
-      // Wait for at.js to load
-      if (typeof adobe !== 'undefined' && adobe.target) {
-        adobe.target.getOffer({
-          mbox: 'homepage-hero',
-          success: function(offer) {
-            adobe.target.applyOffer({
-              mbox: 'homepage-hero',
-              offer: offer,
-              selector: '#homepage-hero-container'
-            });
-            console.log('✅ Target homepage-hero offer applied. { \'offer\' : ' + JSON.stringify(offer) + ' }');
-          },
-          error: function(status, error) {
-            console.error('❌ Target homepage-hero error:', status, error);
-          }
-        });
+      // Wait for at.js to fully initialize before requesting offers
+      function requestHomepageHeroOffer() {
+        if (typeof adobe !== 'undefined' && 
+            adobe.target && 
+            typeof adobe.target.getOffer === 'function') {
+          
+          console.log('🎯 Requesting homepage-hero offer...');
+          console.log('   → Settings:', window.targetGlobalSettings);
+          console.log('   → URL:', window.location.href);
+          
+          adobe.target.getOffer({
+            mbox: 'homepage-hero',
+            params: {
+              'at_property': window.targetGlobalSettings.propertyToken || ''
+            },
+            success: function(offer) {
+              console.log('📦 SUCCESS - Received offer:', offer);
+              console.log('   → Type:', typeof offer);
+              console.log('   → Length:', offer ? offer.length : 'null');
+              console.log('   → Content:', JSON.stringify(offer, null, 2));
+              
+              if (offer && offer.length > 0) {
+                adobe.target.applyOffer({
+                  mbox: 'homepage-hero',
+                  offer: offer,
+                  selector: '#homepage-hero-container'
+                });
+                console.log('✅ Target homepage-hero offer applied successfully');
+              } else {
+                console.warn('⚠️ EMPTY OFFER - Troubleshooting:');
+                console.log('   1. Current URL:', window.location.href);
+                console.log('   2. Mbox name: homepage-hero');
+                console.log('   3. Client Code:', window.targetGlobalSettings.clientCode);
+                console.log('   4. Organization ID:', window.targetGlobalSettings.organizationId);
+                console.log('   5. Property Token:', window.targetGlobalSettings.propertyToken || 'none');
+                console.log('');
+                console.log('   ✓ Check Target UI:');
+                console.log('     - Activity is ACTIVE');
+                console.log('     - Activity type is Form-Based Experience Composer');
+                console.log('     - Location/mbox name matches: homepage-hero');
+                console.log('     - URL targeting includes:', window.location.hostname);
+                console.log('     - Audience conditions are met');
+              }
+            },
+            error: function(status, error) {
+              console.error('❌ ERROR - Target request failed');
+              console.error('   → Status:', status);
+              console.error('   → Error:', error);
+            },
+            timeout: 5000
+          });
+        } else {
+          console.log('⏳ Waiting for at.js initialization...');
+          setTimeout(requestHomepageHeroOffer, 100);
+        }
+      }
+      
+      // Start request after DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', requestHomepageHeroOffer);
       } else {
-        console.warn('⚠️ Adobe Target (at.js) not loaded');
+        requestHomepageHeroOffer();
       }
   
   //- Additional scripts
